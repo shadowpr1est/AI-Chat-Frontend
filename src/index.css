@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+:root {
+    --primary-blue: #0088cc; /* основной цвет Telegram */
+    --light-blue: #54a9eb;
+    --dark-blue: #006bb3;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f4f4f5;
+    --text-primary: #000000;
+    --text-secondary: #707579;
+    --border-color: #e4e4e7;
+    --message-out: #effdde; /* Telegram-style outgoing */
+    --message-in: #ffffff;  /* incoming */
+}
