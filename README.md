@@ -1,54 +1,35 @@
-# React + TypeScript + Vite
+# AI Chat Messenger
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Полнофункциональный веб-мессенджер, объединяющий общение с людьми и искусственным интеллектом в одном интерфейсе. Вдохновлён дизайном и UX Telegram.
 
-Currently, two official plugins are available:
+## 🚀 Технологии
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 18+ (функциональные компоненты, хуки)
+- TypeScript (строгая типизация)
+- Tailwind CSS (современный UI)
+- React Router (навигация между чатами и страницами)
+- React Hook Form (удобные формы)
+- framer-motion (анимации)
+- emoji-picker-react (эмодзи)
+- OpenAI SDK (чат с ИИ)
 
-## Expanding the ESLint configuration
+## 🛠️ Запуск проекта
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🎯 Возможности
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. ✅ **Список чатов** с поиском и фильтрацией
+2. ✅ **Интерфейс переписки**
+3. ✅ **Отправка сообщений** с валидацией
+4. ✅ **Интеграция с ИИ** (любой доступный API)
+5. ✅ **Responsive дизайн** для мобильных устройств
+6. ✅ **TypeScript типизация** всех компонентов
+7. ✅ **Сохранение в localStorage** истории чатов
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+---
+
+> Проект создан для портфолио и демонстрации владения современным стеком фронтенда.
