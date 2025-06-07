@@ -1,6 +1,7 @@
 import {Routes, Route, Outlet, Link, useParams} from 'react-router-dom';
 import {useEffect, useState} from "react";
 import EmojiPicker, { EmojiStyle, SkinTones } from 'emoji-picker-react';
+import { useQuery } from '@tanstack/react-query';
 
 import OpenAI from "openai";
 
@@ -194,12 +195,22 @@ function Chat() {
     );
 }
 
+function fetchChats(): Promise<Chat[]> {
+    return new Promise(resolve => {
+        setTimeout(() => resolve(mockChats), 500);
+    });
+}
+
 function Navbar() {
     const [search, setSearch] = useState('');
-    const filteredChat = mockChats.filter(c => c.username.toLowerCase().includes(search.toLowerCase()));
-    let chats = mockChats;
+    const { data: chats = [], isLoading, error } = useQuery({
+        queryKey: ['chats'],
+        queryFn: fetchChats,
+    });
+    const filteredChat = chats.filter(c => c.username.toLowerCase().includes(search.toLowerCase()));
+    let displayChats = chats;
     if (search) {
-        chats = filteredChat;
+        displayChats = filteredChat;
     }
 
     return (
@@ -209,6 +220,7 @@ function Navbar() {
             </div>
 
             <div className="hidden md:flex bg-[var(--bg-primary)] border-r border-[var(--border-color)] w-80 h-screen flex-col">
+                {/* Поиск */}
                 <div className="h-16 px-5 flex items-center">
                     <input
                         type="text"
@@ -220,7 +232,9 @@ function Navbar() {
                 </div>
 
                 <div className="overflow-y-auto">
-                    {chats.map((chat: Chat) => (
+                    {isLoading && <div className="px-4 py-3 text-gray-400">Загрузка...</div>}
+                    {error && <div className="px-4 py-3 text-red-500">Ошибка загрузки чатов</div>}
+                    {displayChats.map((chat: Chat) => (
                         <Link to={`/chat/${chat.id}`} key={chat.id}>
                             <div className="px-4 py-3 flex items-center border-b border-[var(--border-color)] hover:bg-[var(--bg-secondary)] transition-colors cursor-pointer">
                                 <img
