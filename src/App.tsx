@@ -78,7 +78,7 @@ const LOCAL_STORAGE_KEY = 'my-chat-history';
 
 function Chat() {
     const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-    const openai = new OpenAI({apiKey, dangerouslyAllowBrowser: true});
+    const openai = apiKey ? new OpenAI({apiKey, dangerouslyAllowBrowser: true}) : null;
     const [showPicker, setShowPicker] = useState(false);
     const {id} = useParams();
     const [input, setInput] = useState('');
@@ -91,6 +91,7 @@ function Chat() {
         setInput(prev => prev + emojiObject.emoji);
     };
     const chat = chats.find(c => c.id === id);
+    const isAIChat = chat?.username === 'AI Ассистент';
 
     useEffect(() => {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(chats));
@@ -110,13 +111,21 @@ function Chat() {
             timestamp: new Date().toISOString()
         };
 
-        const updatedChat = chats.map( c => c.id === id ? { ...c, messages: [...c.messages,newMessage]} : c,
-        )
+        // Если это чат с ИИ и нет ключа — просто добавляем своё сообщение и показываем предупреждение
+        if (isAIChat && !apiKey) {
+            setChats(chats => chats.map(c =>
+                c.id === id ? { ...c, messages: [...c.messages, newMessage] } : c
+            ));
+            setInput('');
+            return;
+        }
 
-        setChats(updatedChat)
+        // Обычный чат или чат с ИИ с ключом
+        setChats(chats => chats.map(c =>
+            c.id === id ? { ...c, messages: [...c.messages, newMessage] } : c
+        ));
         setInput('');
-        const isAIChat = chat?.username === 'AI Ассистент';
-        if (isAIChat) {
+        if (isAIChat && openai) {
             try{
                 const aiResponse = await openai.responses.create({
                     model: "gpt-4.1",
@@ -129,10 +138,9 @@ function Chat() {
                     text: aiResponse.output_text.trim(),
                     timestamp: new Date().toISOString()
                 }
-                const updatedChatsWithAI = chats.map(c =>
-                    c.id === id ? { ...c, messages: [...c.messages, newMessage, aiMessage] } : c
-                );
-                setChats(updatedChatsWithAI);
+                setChats(chats => chats.map(c =>
+                    c.id === id ? { ...c, messages: [...c.messages, aiMessage] } : c
+                ));
             }catch (e) {
                 console.error('Ошибка запроса к AI:', e);
             }
@@ -141,13 +149,14 @@ function Chat() {
 
     return (
         <div className="flex-1 bg-[var(--bg-primary)] flex flex-col h-screen overflow-hidden">
-
             {/* Верхняя панель */}
             <div className="h-16 border-b border-[var(--border-color)] px-4 flex items-center space-x-4 bg-white">
                 <img src={chat.avatar} className="w-10 h-10 rounded-full" alt="avatar" />
                 <h2 className="text-base font-semibold text-[var(--text-primary)] truncate">{chat.username}</h2>
+                {isAIChat && !apiKey && (
+                    <span className="ml-4 text-xs text-red-500">ИИ недоступен (нет ключа)</span>
+                )}
             </div>
-
             {/* Сообщения */}
             <div className="flex-1 px-2 sm:px-4 md:pl-[20%] md:pr-[20%] overflow-y-auto py-2 space-y-2 bg-[var(--bg-secondary)]">
                 {chat.messages.map(msg => (
@@ -167,24 +176,25 @@ function Chat() {
                     </div>
                 ))}
             </div>
-
             {/* Инпут */}
             <div className="relative px-2 sm:px-4 md:pl-[20%] md:pr-[20%] border-t border-[var(--border-color)] bg-white py-3">
                 <input
                     type="text"
-                    placeholder="Написать сообщение..."
+                    placeholder={isAIChat && !apiKey ? "ИИ недоступен" : "Написать сообщение..."}
                     value={input}
                     onChange={event => setInput(event.target.value)}
                     onKeyDown={event => (event.key === 'Enter' && sendMessage())}
                     className="w-full border border-[var(--border-color)] rounded-full px-4 py-2 text-sm focus:outline-none"
+                    disabled={isAIChat && !apiKey}
                 />
                 <button
                     onClick={() => setShowPicker(!showPicker)}
                     className="absolute pt-1.5 text-xl"
+                    disabled={isAIChat && !apiKey}
                 >
                     😊
                 </button>
-                {showPicker && (
+                {showPicker && !(!apiKey && isAIChat) && (
                     <div className="absolute bottom-16 left-4 z-50">
                         <EmojiPicker onEmojiClick={(e) => onEmojiClick(e)} />
                     </div>
