@@ -117,27 +117,27 @@ function Chat() {
         setInput('');
         const isAIChat = chat?.username === 'AI Ассистент';
         
-        if (isAIChat) {
-            try{
-                const aiResponse = await openai.responses.create({
-                    model: "gpt-4.1",
-                    instructions: "Ты ИИ ассистент в социальной сети тебя зовут Semicolon AI, соблюдай правила этикета",
-                    input: input
-                });
-                const aiMessage: Message = {
-                    id: `msg-${Date.now()}`,
-                    from: 'user',
-                    text: aiResponse.output_text.trim(),
-                    timestamp: new Date().toISOString()
-                }
-                const updatedChatsWithAI = chats.map(c =>
-                    c.id === id ? { ...c, messages: [...c.messages, newMessage, aiMessage] } : c
-                );
-                setChats(updatedChatsWithAI);
-            }catch (e) {
-                console.error('Ошибка запроса к AI:', e);
-            }
-        }
+        // if (isAIChat) {
+        //     try{
+        //         const aiResponse = await openai.responses.create({
+        //             model: "gpt-4.1",
+        //             instructions: "Ты ИИ ассистент в социальной сети тебя зовут Semicolon AI, соблюдай правила этикета",
+        //             input: input
+        //         });
+        //         const aiMessage: Message = {
+        //             id: `msg-${Date.now()}`,
+        //             from: 'user',
+        //             text: aiResponse.output_text.trim(),
+        //             timestamp: new Date().toISOString()
+        //         }
+        //         const updatedChatsWithAI = chats.map(c =>
+        //             c.id === id ? { ...c, messages: [...c.messages, newMessage, aiMessage] } : c
+        //         );
+        //         setChats(updatedChatsWithAI);
+        //     }catch (e) {
+        //         console.error('Ошибка запроса к AI:', e);
+        //     }
+        // }
     }
 
     return (
