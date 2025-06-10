@@ -1,4 +1,4 @@
-import {Routes, Route, Outlet, Link, useParams} from 'react-router-dom';
+import {Routes, Route, Outlet, Link, useParams, Navigate} from 'react-router-dom';
 import {useEffect, useState} from "react";
 import EmojiPicker, { EmojiStyle, SkinTones } from 'emoji-picker-react';
 import { useQuery } from '@tanstack/react-query';
@@ -116,28 +116,27 @@ function Chat() {
         setChats(updatedChat)
         setInput('');
         const isAIChat = chat?.username === 'AI Ассистент';
-        
-        // if (isAIChat) {
-        //     try{
-        //         const aiResponse = await openai.responses.create({
-        //             model: "gpt-4.1",
-        //             instructions: "Ты ИИ ассистент в социальной сети тебя зовут Semicolon AI, соблюдай правила этикета",
-        //             input: input
-        //         });
-        //         const aiMessage: Message = {
-        //             id: `msg-${Date.now()}`,
-        //             from: 'user',
-        //             text: aiResponse.output_text.trim(),
-        //             timestamp: new Date().toISOString()
-        //         }
-        //         const updatedChatsWithAI = chats.map(c =>
-        //             c.id === id ? { ...c, messages: [...c.messages, newMessage, aiMessage] } : c
-        //         );
-        //         setChats(updatedChatsWithAI);
-        //     }catch (e) {
-        //         console.error('Ошибка запроса к AI:', e);
-        //     }
-        // }
+        if (isAIChat) {
+            try{
+                const aiResponse = await openai.responses.create({
+                    model: "gpt-4.1",
+                    instructions: "Ты ИИ ассистент в социальной сети тебя зовут Semicolon AI, соблюдай правила этикета",
+                    input: input
+                });
+                const aiMessage: Message = {
+                    id: `msg-${Date.now()}`,
+                    from: 'user',
+                    text: aiResponse.output_text.trim(),
+                    timestamp: new Date().toISOString()
+                }
+                const updatedChatsWithAI = chats.map(c =>
+                    c.id === id ? { ...c, messages: [...c.messages, newMessage, aiMessage] } : c
+                );
+                setChats(updatedChatsWithAI);
+            }catch (e) {
+                console.error('Ошибка запроса к AI:', e);
+            }
+        }
     }
 
     return (
@@ -268,6 +267,7 @@ export function App() {
         <Routes>
             <Route element={<AppLayout/>}>
                 <Route path="/chat/:id" element={<Chat/>}/>
+                <Route path="/" element={<Navigate to="/chat/chat1" replace />} />
             </Route>
         </Routes>
     );
